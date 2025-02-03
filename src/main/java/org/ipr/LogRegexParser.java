@@ -7,7 +7,7 @@ import java.nio.file.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class LogParser {
+public class LogRegexParser {
     private Path dirPath = null;
     private Path filterOutputDirPath = null;
 
@@ -26,6 +26,7 @@ public class LogParser {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath, filePattern)) {
             for (Path entry : stream) {
+                System.out.print("Processing regexParsing file: " + entry + "... ");
                 if (Files.isRegularFile(entry)) {
                     // Здесь можно обработать файл
                     Stream<String> trueLines = getRegexLogStreamFromFile(entry, charset, regex);
@@ -42,7 +43,7 @@ public class LogParser {
                             }
                         });
                     }
-                    System.out.println("Processing file [OK] " + entry);
+                    System.out.println("[OK] " + outputFile);
                 }
             }
             return outputFile.getFileName().toString();
@@ -54,6 +55,7 @@ public class LogParser {
     // Парсинг логов одного файла из директории dirPath
     // Возвращает имя выходного файла
     public String parseLogFromFile(Path filename, String charset, String regex) {
+        System.out.println("Processing regexParsing file: " + filename + "... ");
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
                 filename.getFileName().toString().replaceFirst("[.][^.]+$", "")
@@ -75,6 +77,7 @@ public class LogParser {
                     throw new RuntimeException(e);
                 }
             });
+            System.out.println("[OK]: " + outputFile);
             return outputFile.getFileName().toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -143,20 +146,20 @@ public class LogParser {
 
 
     // CONSTRUCTORS AND GETTERS AND SETTERS ****************************************************************************
-    public LogParser(String dirPath) {
+    public LogRegexParser(String dirPath) {
         this(Paths.get(dirPath));
     }
 
-    public LogParser(String dirPath, String filterOutputDirPath) {
+    public LogRegexParser(String dirPath, String filterOutputDirPath) {
         this(Paths.get(dirPath), Paths.get(filterOutputDirPath));
     }
 
-    public LogParser(Path dirPath) {
+    public LogRegexParser(Path dirPath) {
         this.dirPath = dirPath;
         this.filterOutputDirPath = dirPath.resolve("filter-output");
     }
 
-    public LogParser(Path dirPath, Path filterOutputDirPath) {
+    public LogRegexParser(Path dirPath, Path filterOutputDirPath) {
         this.dirPath = dirPath;
         this.filterOutputDirPath = filterOutputDirPath;
     }
