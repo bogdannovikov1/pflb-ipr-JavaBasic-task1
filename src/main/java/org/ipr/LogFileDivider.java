@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 public class LogFileDivider {
     private int numOfFiles = 5;
-    private Path dirPath = Paths.get("src/main/resources/mylogs");
+    private Path dirPath = null;
     private String fileNamePrefix = "my-log-";
     private Path fromFile = null;
-    private Charset charsetFromFile = Charset.defaultCharset();
+    private Charset charset = Charset.defaultCharset();
 
     public void divide() {
         try {
@@ -25,7 +25,7 @@ public class LogFileDivider {
             long countLines = countLines(fromFile);
             long maxBatchSize = countLines / numOfFiles;  // Максимальное количество строк в одном файле
 
-            try (BufferedReader reader = Files.newBufferedReader(fromFile, charsetFromFile)) {
+            try (BufferedReader reader = Files.newBufferedReader(fromFile, charset)) {
                 List<String> batch = new ArrayList<>();
                 String line;
                 int currentLine = 0;
@@ -58,15 +58,20 @@ public class LogFileDivider {
 
     public void divideFrom(Path fromFile) {
         setFromFile(fromFile);
+        setDirPath(fromFile.getParent());
         divide();
     }
 
     public void divideFrom(String fromFile) {
         setFromFile(Paths.get(fromFile));
+        setDirPath(this.fromFile.getParent());
         divide();
     }
 
     public void clearAllFilesFromDir() {
+        if (!Files.exists(dirPath)) {
+            return;
+        }
         try (Stream<Path> walk = Files.walk(dirPath)) {
             walk.sorted(Comparator.reverseOrder())  // Удаляем файлы перед директориями
                     .map(Path::toFile)
@@ -84,59 +89,55 @@ public class LogFileDivider {
         Path newFilePath = dirPath.resolve(fileNamePrefix + index + ".log");
         try {
             Files.createDirectories(newFilePath.getParent());  // Создаем родительскую директорию, если ее нет
-            Files.write(newFilePath, lines, charsetFromFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE);  // Записываем строки в файл
+            Files.write(newFilePath, lines, charset, StandardOpenOption.CREATE, StandardOpenOption.WRITE);  // Записываем строки в файл
         } catch (IOException e) {
             throw new RuntimeException("Error writing to file: " + newFilePath, e);
         }
     }
 
     private long countLines(Path path) throws IOException {
-        try (BufferedReader reader = Files.newBufferedReader(path, charsetFromFile)) {
+        try (BufferedReader reader = Files.newBufferedReader(path, charset)) {
             return reader.lines().count();
         }
     }
 
     public LogFileDivider(String fromFile) {
-        this.fromFile = Paths.get(fromFile);
+        this(Paths.get(fromFile));
     }
 
     public LogFileDivider(String fromFile, String charset) {
-        this.fromFile = Paths.get(fromFile);
-        this.charsetFromFile = Charset.forName(charset);
+        this(Paths.get(fromFile), Charset.forName(charset));
     }
 
     public LogFileDivider(String fromFile, String charset, int numOfFiles) {
-        this.fromFile = Paths.get(fromFile);
-        this.charsetFromFile = Charset.forName(charset);
-        this.numOfFiles = numOfFiles;
+        this(Paths.get(fromFile), Charset.forName(charset), numOfFiles);
     }
 
     public LogFileDivider(String fromFile, String charset, int numOfFiles, String dirPath, String fileNamePrefix) {
-        this.fromFile = Paths.get(fromFile);
-        this.charsetFromFile = Charset.forName(charset);
-        this.numOfFiles = numOfFiles;
-        this.dirPath = Paths.get(dirPath);
-        this.fileNamePrefix = fileNamePrefix;
+        this(Paths.get(fromFile), Charset.forName(charset), numOfFiles, Paths.get(dirPath), fileNamePrefix);
     }
 
     public LogFileDivider(Path fromFile) {
         this.fromFile = fromFile;
+        this.dirPath = fromFile.getParent();
     }
 
-    public LogFileDivider(Path fromFile, Charset charsetFromFile) {
+    public LogFileDivider(Path fromFile, Charset charset) {
         this.fromFile = fromFile;
-        this.charsetFromFile = charsetFromFile;
+        this.dirPath = fromFile.getParent();
+        this.charset = charset;
     }
 
-    public LogFileDivider(Path fromFile, Charset charsetFromFile, int numOfFiles) {
+    public LogFileDivider(Path fromFile, Charset charset, int numOfFiles) {
         this.fromFile = fromFile;
-        this.charsetFromFile = charsetFromFile;
+        this.dirPath = fromFile.getParent();
+        this.charset = charset;
         this.numOfFiles = numOfFiles;
     }
 
-    public LogFileDivider(Path fromFile, Charset charsetFromFile, int numOfFiles, Path dirPath, String fileNamePrefix) {
+    public LogFileDivider(Path fromFile, Charset charset, int numOfFiles, Path dirPath, String fileNamePrefix) {
         this.fromFile = fromFile;
-        this.charsetFromFile = charsetFromFile;
+        this.charset = charset;
         this.numOfFiles = numOfFiles;
         this.dirPath = dirPath;
         this.fileNamePrefix = fileNamePrefix;
@@ -174,12 +175,12 @@ public class LogFileDivider {
         this.fromFile = fromFile;
     }
 
-    public Charset getCharsetFromFile() {
-        return charsetFromFile;
+    public Charset getCharset() {
+        return charset;
     }
 
-    public void setCharsetFromFile(Charset charsetFromFile) {
-        this.charsetFromFile = charsetFromFile;
+    public void setCharset(Charset charset) {
+        this.charset = charset;
     }
 
     @Override
@@ -189,7 +190,7 @@ public class LogFileDivider {
                 ", dirPath=" + dirPath +
                 ", fileNamePrefix='" + fileNamePrefix + '\'' +
                 ", fromFile=" + fromFile +
-                ", charsetFromFile=" + charsetFromFile +
+                ", charset=" + charset +
                 '}';
     }
 }

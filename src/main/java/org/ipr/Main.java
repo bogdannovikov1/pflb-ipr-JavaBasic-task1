@@ -8,7 +8,6 @@ public class Main {
         System.out.println("Start");
         var logFileDivider =
                 new LogFileDivider("src/main/resources/main.log", "Windows-1251", 10);
-        logFileDivider.clearAllFilesFromDir();
         logFileDivider.divide();
         System.out.println("OK");
 
