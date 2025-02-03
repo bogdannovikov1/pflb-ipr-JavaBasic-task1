@@ -12,7 +12,8 @@ public class LogParser {
     private Path filterOutputDirPath = null;
 
     // Парсинг логов всех файлов по маске из директории dirPath
-    public void parseLogFromFiles(String filePattern, String charset, String regex) {
+    // Возвращает имя выходного файла
+    public String parseLogFromFiles(String filePattern, String charset, String regex) {
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
                 filePattern.replaceFirst("[.][^.]+$", "")
@@ -44,13 +45,15 @@ public class LogParser {
                     System.out.println("Processing file [OK] " + entry);
                 }
             }
+            return outputFile.getFileName().toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     // Парсинг логов одного файла из директории dirPath
-    public void parseLogFromFile(Path filename, String charset, String regex) {
+    // Возвращает имя выходного файла
+    public String parseLogFromFile(Path filename, String charset, String regex) {
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
                 filename.getFileName().toString().replaceFirst("[.][^.]+$", "")
@@ -72,30 +75,30 @@ public class LogParser {
                     throw new RuntimeException(e);
                 }
             });
-
+            return outputFile.getFileName().toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     // Перегрузка
-    public void parseLogFromFiles(String filePattern, String regex) {
-        parseLogFromFiles(filePattern, "UTF-8", regex);
+    public String parseLogFromFiles(String filePattern, String regex) {
+        return parseLogFromFiles(filePattern, "UTF-8", regex);
     }
 
     // Перегрузка
-    public void parseLogFromFile(String filename, String charset, String regex) {
-        parseLogFromFile(Paths.get(filename), charset, regex);
+    public String parseLogFromFile(String filename, String charset, String regex) {
+        return parseLogFromFile(Paths.get(filename), charset, regex);
     }
 
     // Перегрузка
-    public void parseLogFromFile(Path filename, String regex) {
-        parseLogFromFile(filename, "UTF-8", regex);
+    public String parseLogFromFile(Path filename, String regex) {
+        return parseLogFromFile(filename, "UTF-8", regex);
     }
 
     // Перегрузка
-    public void parseLogFromFile(String filename, String regex) {
-        parseLogFromFile(Paths.get(filename), regex);
+    public String parseLogFromFile(String filename, String regex) {
+        return parseLogFromFile(Paths.get(filename), regex);
     }
 
     // Удалить все файлы из директории с фильтрами

@@ -14,7 +14,10 @@ public class Main {
         System.out.println("Start 2");
         var logParser = new LogParser(logFileDivider.getDirPath());
         logParser.clearAllFilesFromFilterOutputDirPath();
-        logParser.parseLogFromFiles("my-*-??.log", "Windows-1251", "price");
+        String regexFilename1 = logParser.parseLogFromFile("my-log-1.log", "Windows-1251", "price");
+        String regexFilename2 = logParser.parseLogFromFiles("my-*-??.log", "Windows-1251", "price");
+        System.out.println(regexFilename1);
+        System.out.println(regexFilename2);
         System.out.println("OK 2");
 
     }
