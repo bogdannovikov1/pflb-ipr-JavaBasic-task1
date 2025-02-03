@@ -50,6 +50,11 @@ public class LogParser {
         }
     }
 
+    // Перегрузка
+    public void parseLogFromFiles(String filePattern, String regex) {
+        parseLogFromFiles(filePattern, "UTF-8", regex);
+    }
+
     public void parseLogFromFile(Path filename, String charset, String regex) {
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
@@ -78,8 +83,19 @@ public class LogParser {
         }
     }
 
+    // Перегрузка
     public void parseLogFromFile(String filename, String charset, String regex) {
         parseLogFromFile(Paths.get(filename), charset, regex);
+    }
+
+    // Перегрузка
+    public void parseLogFromFile(Path filename, String regex) {
+        parseLogFromFile(filename, "UTF-8", regex);
+    }
+
+    // Перегрузка
+    public void parseLogFromFile(String filename, String regex) {
+        parseLogFromFile(Paths.get(filename), regex);
     }
 
 

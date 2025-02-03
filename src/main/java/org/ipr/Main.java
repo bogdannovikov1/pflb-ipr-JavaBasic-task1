@@ -12,7 +12,7 @@ public class Main {
 
 
         System.out.println("Start 2");
-        var logParser = new LogParser("src/main/resources/my-logs");
+        var logParser = new LogParser(logFileDivider.getDirPath());
         logParser.clearAllFilesFromFilterOutputDirPath();
         logParser.parseLogFromFiles("my-*-??.log", "Windows-1251", "price");
         System.out.println("OK 2");
