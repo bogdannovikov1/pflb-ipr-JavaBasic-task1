@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,6 +19,7 @@ public class LogFileDivider {
     private Path fromFile = null;
     private Charset charset = StandardCharsets.UTF_8;
 
+    // Разделить лог-файл fromFile на части (numOfFiles) и сохранить в директории dirPath
     public void divide() {
         try {
             // Получаем общее количество строк в файле
@@ -57,23 +57,26 @@ public class LogFileDivider {
         }
     }
 
+    // Перегрузка
     public void divideFrom(Path fromFile) {
         setFromFile(fromFile);
         setDirPath(fromFile.getParent().resolve("my-logs"));
         divide();
     }
 
+    // Перегрузка
     public void divideFrom(String fromFile) {
         setFromFile(Paths.get(fromFile));
         setDirPath(this.fromFile.getParent().resolve("my-logs"));
         divide();
     }
 
-
+    // Удалить все файлы из директории dirPath
     public void clearAllFilesFromDirPath() {
         clearAllFilesFromDirPath(dirPath);
     }
 
+    // Статический вспомогательный метод очистки файлов из директории (не рекурсивная)
     public static void clearAllFilesFromDirPath(Path dirPath) {
         if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
             return;
@@ -92,6 +95,7 @@ public class LogFileDivider {
         }
     }
 
+    // Вспомогательный метод
     private void writeToFile(List<String> lines, int index) {
         Path newFilePath = dirPath.resolve(fileNamePrefix + index + ".log");
         try {
@@ -102,6 +106,7 @@ public class LogFileDivider {
         }
     }
 
+    // Вспомогательный метод
     private long countLines(Path path) throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(path, charset)) {
             return reader.lines().count();

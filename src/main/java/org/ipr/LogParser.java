@@ -4,15 +4,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LogParser {
     private Path dirPath = null;
     private Path filterOutputDirPath = null;
 
+    // Парсинг логов всех файлов по маске из директории dirPath
     public void parseLogFromFiles(String filePattern, String charset, String regex) {
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
@@ -50,11 +49,7 @@ public class LogParser {
         }
     }
 
-    // Перегрузка
-    public void parseLogFromFiles(String filePattern, String regex) {
-        parseLogFromFiles(filePattern, "UTF-8", regex);
-    }
-
+    // Парсинг логов одного файла из директории dirPath
     public void parseLogFromFile(Path filename, String charset, String regex) {
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
@@ -84,6 +79,11 @@ public class LogParser {
     }
 
     // Перегрузка
+    public void parseLogFromFiles(String filePattern, String regex) {
+        parseLogFromFiles(filePattern, "UTF-8", regex);
+    }
+
+    // Перегрузка
     public void parseLogFromFile(String filename, String charset, String regex) {
         parseLogFromFile(Paths.get(filename), charset, regex);
     }
@@ -98,11 +98,12 @@ public class LogParser {
         parseLogFromFile(Paths.get(filename), regex);
     }
 
-
+    // Удалить все файлы из директории с фильтрами
     public void clearAllFilesFromFilterOutputDirPath() {
         LogFileDivider.clearAllFilesFromDirPath(filterOutputDirPath);
     }
 
+    // Вспомогательная функция
     private Stream<String> getRegexLogStreamFromFile(Path filename, String charset, String regex) {
         Pattern pattern = Pattern.compile(regex);
         try {
@@ -114,6 +115,7 @@ public class LogParser {
         }
     }
 
+    // Вспомогательная функция
     private void addFilterOutputDir() {
         // Проверка существования директории и её создание, если необходимо
         if (!Files.exists(filterOutputDirPath)) {
@@ -125,6 +127,7 @@ public class LogParser {
         }
     }
 
+    // Вспомогательная функция
     private static String safeRegex(String regex) {
         // Заменяем символы, которые могут быть запрещены в имени файла, на допустимые
         // Заменяем запрещенные символы на _
