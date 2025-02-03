@@ -58,13 +58,13 @@ public class LogFileDivider {
 
     public void divideFrom(Path fromFile) {
         setFromFile(fromFile);
-        setDirPath(fromFile.getParent());
+        setDirPath(fromFile.getParent().resolve("my-logs"));
         divide();
     }
 
     public void divideFrom(String fromFile) {
         setFromFile(Paths.get(fromFile));
-        setDirPath(this.fromFile.getParent());
+        setDirPath(this.fromFile.getParent().resolve("my-logs"));
         divide();
     }
 
@@ -119,18 +119,18 @@ public class LogFileDivider {
 
     public LogFileDivider(Path fromFile) {
         this.fromFile = fromFile;
-        this.dirPath = fromFile.getParent();
+        this.dirPath = fromFile.getParent().resolve("my-logs");
     }
 
     public LogFileDivider(Path fromFile, Charset charset) {
         this.fromFile = fromFile;
-        this.dirPath = fromFile.getParent();
+        this.dirPath = fromFile.getParent().resolve("my-logs");
         this.charset = charset;
     }
 
     public LogFileDivider(Path fromFile, Charset charset, int numOfFiles) {
         this.fromFile = fromFile;
-        this.dirPath = fromFile.getParent();
+        this.dirPath = fromFile.getParent().resolve("my-logs");
         this.charset = charset;
         this.numOfFiles = numOfFiles;
     }
