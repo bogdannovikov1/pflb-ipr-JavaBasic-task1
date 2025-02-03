@@ -83,6 +83,10 @@ public class LogParser {
             }
         }
 
+        public LogFileDivider(String fromFile) {
+            this.fromFile = Paths.get(fromFile);
+        }
+
         public LogFileDivider(Path fromFile) {
             this.fromFile = fromFile;
         }
