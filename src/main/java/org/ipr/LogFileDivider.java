@@ -3,6 +3,7 @@ package org.ipr;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +18,7 @@ public class LogFileDivider {
     private Path dirPath = null;
     private String fileNamePrefix = "my-log-";
     private Path fromFile = null;
-    private Charset charset = Charset.defaultCharset();
+    private Charset charset = StandardCharsets.UTF_8;
 
     public void divide() {
         try {
@@ -68,12 +69,18 @@ public class LogFileDivider {
         divide();
     }
 
-    public void clearAllFilesFromDir() {
-        if (!Files.exists(dirPath)) {
+
+    public void clearAllFilesFromDirPath() {
+        clearAllFilesFromDirPath(dirPath);
+    }
+
+    public static void clearAllFilesFromDirPath(Path dirPath) {
+        if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
             return;
         }
-        try (Stream<Path> walk = Files.walk(dirPath)) {
-            walk.sorted(Comparator.reverseOrder())  // Удаляем файлы перед директориями
+        try (Stream<Path> files = Files.list(dirPath)) { // Используем Files.list для первого уровня файлов
+            files
+                    .filter(Files::isRegularFile) // Фильтруем только файлы, игнорируя директории
                     .map(Path::toFile)
                     .forEach(file -> {
                         if (!file.delete()) {
@@ -101,6 +108,7 @@ public class LogFileDivider {
         }
     }
 
+    // CONSTRUCTORS AND GETTERS AND SETTERS ****************************************************************************
     public LogFileDivider(String fromFile) {
         this(Paths.get(fromFile));
     }
@@ -193,4 +201,5 @@ public class LogFileDivider {
                 ", charset=" + charset +
                 '}';
     }
+    // *****************************************************************************************************************
 }
