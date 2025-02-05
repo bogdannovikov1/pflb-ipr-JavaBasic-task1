@@ -14,10 +14,13 @@ import java.util.regex.Pattern;
 import static org.ipr.core.FinalLogRegex.*;
 
 public class LogSeparatorInserter {
+    private Path csvFile = null;
+    private Path ignoredFile = null;
+
 
     // Вставляет разделитель и создает CSV в том же каталоге
     // Возвращает количество логов, которые были проигнорированы
-    public static int insertAndMakeCSV(String separator, Path toFile, Charset charset) {
+    public int insertAndMakeCSV(String separator, Path toFile, Charset charset) {
         int null_counter = 0;
         Path CSVfilename = Paths.get(
                 toFile.toString().replaceFirst("[.][^.]+$", "") + ".csv"
@@ -56,13 +59,15 @@ public class LogSeparatorInserter {
                 }
             }
         }
+        this.csvFile = CSVfilename;
+        this.ignoredFile = ignoredFilename;
         return null_counter;
     }
 
     // Основной метод в котором происходит разделение логов
     // В зависимости от статуса лога, вызывается соответствующий код,
     // возвращается уже строка форматированного лога
-    public static String getSeparatedLogLine(String line, String separator) {
+    private String getSeparatedLogLine(String line, String separator) {
         String status = getLogStatus(line);
         if (status == null) {
             return null;
@@ -142,7 +147,7 @@ public class LogSeparatorInserter {
     }
 
     // Вспомогательный метод для получения статуса лога
-    private static String getLogStatus(String line) {
+    private String getLogStatus(String line) {
         Pattern pattern = Pattern.compile(FOUND_LOG_STATUS_REGEX);
         Matcher matcher = pattern.matcher(line);
 
@@ -153,8 +158,23 @@ public class LogSeparatorInserter {
     }
 
     // Перегрузка
-    public static int insertAndMakeCSV(String separator, String toFile, String charset) {
+    public int insertAndMakeCSV(String separator, String toFile, String charset) {
         return insertAndMakeCSV(separator, Paths.get(toFile), Charset.forName(charset));
     }
 
+    public Path getCsvFile() {
+        return csvFile;
+    }
+
+    public void setCsvFile(Path csvFile) {
+        this.csvFile = csvFile;
+    }
+
+    public Path getIgnoredFile() {
+        return ignoredFile;
+    }
+
+    public void setIgnoredFile(Path ignoredFile) {
+        this.ignoredFile = ignoredFile;
+    }
 }

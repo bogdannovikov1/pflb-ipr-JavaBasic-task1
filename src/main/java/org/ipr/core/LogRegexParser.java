@@ -18,7 +18,7 @@ public class LogRegexParser {
         Path outputFile = filterOutputDirPath.resolve(
                 filePattern.replaceFirst("[.][^.]+$", "")
                         .replace("*", "[AnyChars]")
-                        .replace("?", "[AnyChar]")
+                        .replace("?", "[OneChar]")
                         + "@" + safeRegex(regex) + ".log"
         );
         // Проверка существования директории и её создание, если необходимо
