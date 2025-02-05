@@ -22,6 +22,7 @@ public class LogSeparatorInserter {
     // Возвращает количество логов, которые были проигнорированы
     public int insertAndMakeCSV(String separator, Path toFile, Charset charset) {
         int null_counter = 0;
+
         Path CSVfilename = Paths.get(
                 toFile.toString().replaceFirst("[.][^.]+$", "") + ".csv"
         );
@@ -46,19 +47,23 @@ public class LogSeparatorInserter {
                 }
             }
 
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         if (null_counter == 0) {
             // Удалить файл
             if (Files.exists(ignoredFilename)) {
                 try {
+                    Thread.sleep(50);
                     Files.delete(ignoredFilename);
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
+
         this.csvFile = CSVfilename;
         this.ignoredFile = ignoredFilename;
         return null_counter;

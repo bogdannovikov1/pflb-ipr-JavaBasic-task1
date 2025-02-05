@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class LogParser {
     private Path logDir = null;
@@ -59,24 +60,24 @@ public class LogParser {
         if (help) {
             System.out.println("Поиск логов по регулярному выражению " + regex + " в директории " + fromDir + " среди файлов по маске " + fileMask + " ...");
         }
-        LogRegexParser parser = new LogRegexParser(fromDir, filterDir);
+        LogRegexParser parser = new LogRegexParser(fromDir, fromDir);
         String outFile = parser.parseLogFromFiles(fileMask, String.valueOf(this.charset), regex);
         if (outFile == null) {
             throw new RuntimeException("Files not found by mask: " + fileMask);
         }
         // Если файл пустой
         try {
-            if (Files.size(filterDir.resolve(outFile)) == 0) {
-                Files.delete(filterDir.resolve(outFile));
+            if (Files.size(fromDir.resolve(outFile)) == 0) {
+                Files.delete(fromDir.resolve(outFile));
                 throw new RuntimeException("No lines found by regex: " + regex);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         if (help) {
-            System.out.println("Готово. Результат в: " + filterDir.resolve(outFile));
+            System.out.println("Готово. Результат в: " + fromDir.resolve(outFile));
         }
-        return filterDir.resolve(outFile);
+        return fromDir.resolve(outFile);
 
     }
 
@@ -100,15 +101,14 @@ public class LogParser {
         LogSeparatorInserter inserter = new LogSeparatorInserter();
         int c = inserter.insertAndMakeCSV(separator, file, this.charset);
         if (help) {
-            System.out.print("Готово. Результат в: " + inserter.getCsvFile() + " Проигнорировано логов: " + c);
+            System.out.println("Готово. Результат в: " + inserter.getCsvFile() + " Проигнорировано логов: " + c);
             if (c > 0) {
-                System.out.print(" (см. " + inserter.getIgnoredFile() + " файл в той же директории)");
-                System.out.println(" если логи не матчатся, то можете попробовать отредактировать регулярные выражения " +
+                System.out.print(" (см. " + inserter.getIgnoredFile() + " файл в той же директории)" +
+                        " если логи не матчатся, то можете попробовать отредактировать регулярные выражения " +
                         "в src/main/java/org/ipr/core/FinalLogRegex.java");
-                System.out.println("предполагается делить логи на 4 колонки регулярными выражениями с 4мя группами, " +
+                System.out.println(" предполагается делить логи на 4 колонки регулярными выражениями с 4мя группами, " +
                         "если колонок больше то нужно менять логику в src/main/java/org/ipr/core/LogSeparatorInserter.java");
             }
-            System.out.println();
         }
         return c;
     }
@@ -171,7 +171,8 @@ public class LogParser {
     }
 
     public LogParser(Path logDir, String charset) {
-        this(logDir, Charset.forName(charset));
+        this.logDir = logDir;
+        this.charset = Charset.forName(charset);
     }
 
     public Path getLogDir() {

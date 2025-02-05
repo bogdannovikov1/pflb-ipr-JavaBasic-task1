@@ -4,6 +4,6 @@
     <file url="file://$PROJECT_DIR$/my-log-[AnyChars]@DEBUG.csv" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/my-logs/filter-output/my-log-1@price.log" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/my-logs/filter-output/my-log-1@price.log" charset="UTF-8" />
   </component>
 </project>

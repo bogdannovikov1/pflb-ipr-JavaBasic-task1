@@ -22,7 +22,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.ipr.MainP1</mainClass>
+                            <mainClass>org.ipr.MainP3</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
