@@ -1,4 +1,4 @@
-package org.ipr;
+package org.ipr.core;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,6 +25,7 @@ public class LogRegexParser {
         addFilterOutputDir();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath, filePattern)) {
+            boolean wasin = false;
             for (Path entry : stream) {
                 System.out.print("Processing regexParsing file: " + entry + "... ");
                 if (Files.isRegularFile(entry)) {
@@ -45,8 +46,13 @@ public class LogRegexParser {
                     }
                     System.out.println("[OK] " + outputFile);
                 }
+                wasin = true;
             }
-            return outputFile.getFileName().toString();
+            if (wasin) {
+                return outputFile.getFileName().toString();
+            } else {
+                return null;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -162,10 +168,6 @@ public class LogRegexParser {
     public LogRegexParser(Path dirPath, Path filterOutputDirPath) {
         this.dirPath = dirPath;
         this.filterOutputDirPath = filterOutputDirPath;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Start");
     }
     // *****************************************************************************************************************
 }

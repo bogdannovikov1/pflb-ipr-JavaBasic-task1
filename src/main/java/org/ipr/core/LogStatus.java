@@ -1,4 +1,4 @@
-package org.ipr;
+package org.ipr.core;
 
 public enum LogStatus {
     TRACE, DEBUG, INFO, WARN, ERROR, FATAL;

@@ -1,4 +1,4 @@
-package org.ipr;
+package org.ipr.core;
 
 public class FinalLogRegex {
     public static final String TRACE_REGEX = "^(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(TRACE:)\\s+([\\d\\.]+):([\\d]+)\\s+(.*)$";

@@ -1,4 +1,4 @@
-package org.ipr;
+package org.ipr.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -115,9 +115,13 @@ public class LogFileDivider {
 
     // Вспомогательный метод
     private long countLines(Path path) throws IOException {
+        long c = 0;
         try (BufferedReader reader = Files.newBufferedReader(path, charset)) {
-            return reader.lines().count();
+            while (reader.readLine() != null) {
+                c++;
+            }
         }
+        return c;
     }
 
     // CONSTRUCTORS AND GETTERS AND SETTERS ****************************************************************************
@@ -162,6 +166,7 @@ public class LogFileDivider {
         this.dirPath = dirPath;
         this.fileNamePrefix = fileNamePrefix;
     }
+
 
     public int getNumOfFiles() {
         return numOfFiles;

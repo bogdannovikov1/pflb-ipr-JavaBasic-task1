@@ -1,4 +1,4 @@
-package org.ipr;
+package org.ipr.core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,7 +11,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.ipr.FinalLogRegex.*;
+import static org.ipr.core.FinalLogRegex.*;
 
 public class LogSeparatorInserter {
 
