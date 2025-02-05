@@ -27,7 +27,6 @@ public class LogRegexParser {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath, filePattern)) {
             boolean wasin = false;
             for (Path entry : stream) {
-                System.out.print("Processing regexParsing file: " + entry + "... ");
                 if (Files.isRegularFile(entry)) {
                     // Здесь можно обработать файл
                     Stream<String> trueLines = getRegexLogStreamFromFile(entry, charset, regex);
@@ -44,7 +43,6 @@ public class LogRegexParser {
                             }
                         });
                     }
-                    System.out.println("[OK] " + outputFile);
                 }
                 wasin = true;
             }
@@ -61,7 +59,6 @@ public class LogRegexParser {
     // Парсинг логов одного файла из директории dirPath
     // Возвращает имя выходного файла
     public String parseLogFromFile(Path filename, String charset, String regex) {
-        System.out.println("Processing regexParsing file: " + filename + "... ");
         // Формируем путь для выходного файла, убирая расширение .log и добавляя регулярное выражение
         Path outputFile = filterOutputDirPath.resolve(
                 filename.getFileName().toString().replaceFirst("[.][^.]+$", "")
@@ -83,7 +80,6 @@ public class LogRegexParser {
                     throw new RuntimeException(e);
                 }
             });
-            System.out.println("[OK]: " + outputFile);
             return outputFile.getFileName().toString();
         } catch (IOException e) {
             throw new RuntimeException(e);

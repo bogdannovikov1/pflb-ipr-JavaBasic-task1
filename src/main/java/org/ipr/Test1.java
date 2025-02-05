@@ -2,6 +2,7 @@ package org.ipr;
 
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Test1 {
     public static void main(String[] args) {
@@ -12,6 +13,7 @@ public class Test1 {
 
         String mainDividedMask = logParser.divide("main.log", 10);
         Path traceFilterFile = logParser.foundRegex(mainDividedMask, "TRACE");
+
         int ignored = logParser.insertSepatator("|", traceFilterFile);
         System.out.println(ignored);
         System.out.println("End");

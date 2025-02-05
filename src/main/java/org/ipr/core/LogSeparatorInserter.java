@@ -18,34 +18,44 @@ public class LogSeparatorInserter {
     // Вставляет разделитель и создает CSV в том же каталоге
     // Возвращает количество логов, которые были проигнорированы
     public static int insertAndMakeCSV(String separator, Path toFile, Charset charset) {
-        System.out.print("START Processing Insering From file: " + toFile + " To file: ");
         int null_counter = 0;
         Path CSVfilename = Paths.get(
                 toFile.toString().replaceFirst("[.][^.]+$", "") + ".csv"
         );
-        System.out.println(" " + CSVfilename);
+        Path ignoredFilename = Paths.get(
+                toFile.toString().replaceFirst("[.][^.]+$", "") + ".ignored"
+        );
         try (
                 BufferedReader reader = Files.newBufferedReader(toFile, charset);
-                BufferedWriter writer = Files.newBufferedWriter(CSVfilename, charset, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+                BufferedWriter writer = Files.newBufferedWriter(CSVfilename, charset, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                BufferedWriter writer_to_ignored = Files.newBufferedWriter(ignoredFilename, charset, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
         ) {
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.print("Processing line: " + line + "...");
                 String separatedLine = getSeparatedLogLine(line, separator);
                 if (separatedLine != null) {
                     writer.write(separatedLine);
                     writer.newLine();
-                    System.out.println("[OK]");
                 } else {
+                    writer_to_ignored.write(line);
+                    writer_to_ignored.newLine();
                     null_counter++;
-                    System.out.println("[IGNORED]");
                 }
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("END Processing Insering [OK] From file: " + toFile + " To file: " + CSVfilename);
+        if (null_counter == 0) {
+            // Удалить файл
+            if (Files.exists(ignoredFilename)) {
+                try {
+                    Files.delete(ignoredFilename);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         return null_counter;
     }
 
@@ -73,7 +83,6 @@ public class LogSeparatorInserter {
                     // Форматированный вывод
                     return String.join("|", dateTime, trace.replace(":", ""), ipPort, rest);
                 } else {
-                    System.out.println("Строка не соответствует ожидаемому формату и будет проигнорирована: " + line);
                     return null;
                 }
             case DEBUG:
@@ -87,7 +96,6 @@ public class LogSeparatorInserter {
                     // Вывод результата с разделителем |
                     return String.join("|", dateTime, debug.replace(":", ""), ipAndPort, message);
                 } else {
-                    System.out.println("Строка не соответствует ожидаемому формату и будет проигнорирована: " + line);
                     return null;
                 }
             case INFO:
@@ -102,7 +110,7 @@ public class LogSeparatorInserter {
                     // Если в группе с IP ничего не захвачено, устанавливаем "null"
                     if (ip == null || ip.isEmpty()) {
                         // Регулярное выражение для поиска IP (с портом, если имеется) в теле сообщения
-                        Pattern ipPattern = Pattern.compile("(\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d+)?(?:\\.[\\w]+)?)");
+                        Pattern ipPattern = Pattern.compile("(\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d+)?(?:\\.\\w+)?)");
                         Matcher ipMatcher = ipPattern.matcher(message);
                         if (ipMatcher.find()) {
                             ip = ipMatcher.group(1);
@@ -112,7 +120,6 @@ public class LogSeparatorInserter {
                     }
                     return String.join("|", date, level.replace(":", ""), ip, message);
                 } else {
-                    System.out.println("Строка не соответствует ожидаемому формату и будет проигнорирована: " + line);
                     return null;
                 }
             case WARN:
@@ -126,18 +133,10 @@ public class LogSeparatorInserter {
                     // Вывод результата с разделителем |
                     return String.join("|", dateTime, logLevel.replace(":", ""), ipAndPort, message);
                 } else {
-                    System.out.println("Строка не соответствует ожидаемому формату и будет проигнорирована: " + line);
                     return null;
                 }
 
-            case ERROR:
-                System.out.println("Error логи еще не поддерживаются, строка будет проигнорирована: " + line);
-                return null;
-            case FATAL:
-                System.out.println("Fatal логи еще не поддерживаются, строка будет проигнорирована: " + line);
-                return null;
             default:
-                System.out.println("Неизвестный статус лога: " + logStatus + ", строка будет проигнорирована: " + line);
                 return null;
         }
     }
@@ -149,8 +148,6 @@ public class LogSeparatorInserter {
 
         if (matcher.find()) {
             return matcher.group(1);
-        } else {
-            System.out.println("Строка не соответствует ожидаемому формату лог статуса и будет проигнорирована: " + line);
         }
         return null;
     }

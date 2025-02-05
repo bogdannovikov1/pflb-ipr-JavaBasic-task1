@@ -23,7 +23,6 @@ public class LogFileDivider {
     public void divide() {
         try {
             // Получаем общее количество строк в файле
-            System.out.println("START Processing Divide from: " + fromFile);
             long countLines = countLines(fromFile);
             long maxBatchSize = countLines / numOfFiles;  // Максимальное количество строк в одном файле
 
@@ -40,10 +39,8 @@ public class LogFileDivider {
 
                     // Если текущая партия полна, записываем ее в файл
                     if (currentLine >= maxBatchSize) {
-                        System.out.print("Processing Divide: writing batch " + fileIndex + "... ");
                         String fileName = fileNamePrefix + fileIndex + ".log";
                         writeToFile(batch, fileIndex);
-                        System.out.println("[OK] " + dirPath.resolve("my-logs").resolve(fileName));
                         fileIndex++;
                         batch.clear();  // Очищаем партию для следующего набора строк
                         currentLine = 0;
@@ -54,8 +51,6 @@ public class LogFileDivider {
                 if (!batch.isEmpty()) {
                     writeToFile(batch, fileIndex);
                 }
-
-                System.out.println("END Processing Divide: [OK]");
 
             }
         } catch (IOException e) {
